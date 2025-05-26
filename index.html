@@ -8,6 +8,7 @@
   <style>
     body { font-family: Arial, sans-serif; background: #e3f2fd; margin: 0; padding: 20px; color: #000; }
     h1 { text-align: center; }
+    header img { max-width: 180px; display: block; margin: 0 auto 10px; }
     ul { list-style-type: none; padding: 0; }
     li { margin: 10px 0; padding: 10px; background: #fff; border-left: 5px solid #ccc; border-radius: 4px; }
     .perfect { border-color: green; }
@@ -20,7 +21,10 @@
   </style>
 </head>
 <body>
-  <h1>⛺ Campingwetter Tilleda</h1>
+  <header>
+    <img src="logo.png" alt="CampingWetter Tilltop Logo">
+    <h1>⛺ Campingwetter Tilleda</h1>
+  </header>
   <p>Nur perfekte oder fast perfekte Campingtage – sonst übernimmt der Greiner! 😎</p>
   <ul id="campingDays"></ul>
   <div class="last-updated" id="lastUpdated"></div>
@@ -118,5 +122,22 @@ Greiner approved!"
       document.getElementById("greinerSound").play();
     }
   </script>
+
+<script>
+  // Automatisches Neuladen alle 2 Stunden (7200000 ms)
+  setTimeout(() => {
+    location.reload();
+  }, 7200000);
+
+  // Optional: PWA Service Worker Registrieren
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(function(reg) {
+      console.log('Service Worker registriert:', reg.scope);
+    }).catch(function(error) {
+      console.log('Service Worker Fehler:', error);
+    });
+  }
+</script>
+
 </body>
 </html>
