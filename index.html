@@ -1,71 +1,75 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>Campingwetter Tilleda</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="manifest" href="manifest.json">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #e0f7fa; color: #000; transition: background-color 0.3s, color 0.3s; }
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #e0f7fa; color: #000; }
     ul { list-style-type: none; padding: 0; }
-    li { background-color: #ffffff; margin: 10px 0; padding: 10px; border-radius: 5px; }
+    li { background-color: #fff; margin: 10px 0; padding: 10px; border-radius: 5px; }
     .perfect { border-left: 5px solid #4caf50; }
     .almost { border-left: 5px solid #ffa000; }
     .bad { border-left: 5px solid #e53935; }
-    .notify { margin-top: 20px; padding: 10px; background-color: #c8e6c9; border: 1px solid #388e3c; border-radius: 5px; display: none; }
+    .greiner-button { margin-top: 20px; padding: 10px 15px; background-color: #81c784; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; }
+    .greiner-output { margin-top: 10px; font-style: italic; color: #00796b; font-size: 1.1em; }
     .last-updated { font-size: 0.85em; color: #444; margin-top: 10px; }
-    .greiner-button { margin-top: 20px; padding: 10px 15px; background-color: #81c784; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; }
-    .greiner-button:hover { background-color: #66bb6a; }
-    .greiner-output { margin-top: 10px; font-style: italic; color: #00796b; font-size: 1.1em; animation: pop 0.4s ease; white-space: pre-line; }
-    @keyframes pop {
-      0% { transform: scale(0.95); opacity: 0.6; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    header {
-      text-align: center;
-      padding: 2rem;
-      background: linear-gradient(to right, #4caf50, #81c784);
-      color: white;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    @media (prefers-color-scheme: dark) {
-      body { background-color: #121212; color: #ffffff; }
-      li { background-color: #1e1e1e; }
-      .notify { background-color: #2e7d32; border-color: #66bb6a; }
-      .last-updated { color: #bbb; }
-      .greiner-output { color: #66bb6a; }
-      header { background: linear-gradient(to right, #2e7d32, #66bb6a); }
-    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>⛺ Campingwetter Tilleda</h1>
-    <p>Nur perfekte Tage für dein Abenteuer!</p>
-  </header>
-
-  <p>Hier findest du nur die <strong>besten Tage zum Zelten</strong> – ganz ohne Regen, Sturm oder Schwitzattacken.<br>
-  <em>„Fast perfekte Tage“</em> werden separat angezeigt und sind auch nicht zu verachten! 😉</p>
-
-  <h2>Dynamisches Grainer-Wetter-Warnsystem</h2>
+  <h1>⛺ Campingwetter Tilleda</h1>
+  <p>Nur perfekte Tage fürs Zelten – schlechte Tage blendet Greiner aus. 😉</p>
   <ul id="campingDays"></ul>
-  <div id="notification" class="notify"></div>
-  <div id="lastUpdated" class="last-updated"></div>
-
+  <div class="last-updated" id="lastUpdated"></div>
   <button class="greiner-button" onclick="greinerSagt()">🤔 Was würde Greiner tun?</button>
-  <div id="greinerSpruch" class="greiner-output"></div>
+  <div class="greiner-output" id="greinerSpruch"></div>
   <audio id="greinerSound">
     <source src="https://actions.google.com/sounds/v1/human_voices/man_laugh_and_cheer.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/human_voices/man_laugh_and_cheer.mp3" type="audio/mpeg">
   </audio>
 
-  <p style="margin-top: 20px; font-size: 0.9em; color: #555;">
-    💡 Tipp: Auf dem Smartphone kannst du diese Seite über das Browsermenü <em>„Zum Startbildschirm hinzufügen“</em>, um sie wie eine App zu nutzen!
-  </p>
-
   <script>
+    const lat = 51.4575, lon = 11.0581;
+    const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,cloudcover_mean,windspeed_10m_max,relative_humidity_2m_mean&timezone=Europe%2FBerlin`;
+
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        const days = data.daily;
+        const list = document.getElementById('campingDays');
+        list.innerHTML = '';
+        const updated = document.getElementById('lastUpdated');
+        const now = new Date();
+        updated.textContent = `🔄 Letzte Aktualisierung: ${now.toLocaleTimeString("de-DE")}`;
+
+        for (let i = 0; i < days.time.length; i++) {
+          const max = days.temperature_2m_max[i];
+          const min = days.temperature_2m_min[i];
+          const rain = days.precipitation_sum[i];
+          const clouds = days.cloudcover_mean[i];
+          const wind = days.windspeed_10m_max[i];
+          const humidity = days.relative_humidity_2m_mean[i];
+
+          const date = days.time[i];
+          const icon = clouds < 20 ? '☀️' : clouds < 70 ? '⛅' : '☁️';
+
+          const li = document.createElement('li');
+          li.textContent = `${date}: ${icon} ${max}°C / ${min}°C`;
+
+          if (max >= 17 && max <= 30 && min >= 9 && min <= 21 && rain === 0 && clouds <= 50 && wind < 30 && humidity < 70) {
+            li.classList.add('perfect');
+            li.innerHTML += "<br><strong>🌟 Perfekter Campingtipp!</strong>";
+          } else if (max >= 15 && max <= 32 && min >= 7 && min <= 23 && rain <= 1 && clouds <= 70 && wind < 35 && humidity <= 75) {
+            li.classList.add('almost');
+            li.innerHTML += "<br><strong>👍 Fast perfekt – mit kleinen Abstrichen</strong>";
+          } else {
+            li.classList.add('bad');
+            li.innerHTML += "<br><strong>❌ Nicht einmal der Greiner hat da Bock.</strong>";
+          }
+
+          list.appendChild(li);
+        }
+      });
+
     function greinerSagt() {
       const sprueche = [
         "Der Greiner braucht keinen Wetterbericht – er IST das Wetter!",
@@ -79,18 +83,13 @@
         "Kälte ist relativ. Greiner ist absolut warmherzig genug.",
         "Wenn’s hagelt, stellt Greiner einfach den Grill unter die Plane.",
         "Der Greiner braucht keine Stirnlampe – er strahlt von innen.",
-        "     ( ͡° ͜ʖ ͡°)   
-Greiner approved!"
+        "( ͡° ͜ʖ ͡°)   \nGreiner approved!"
       ];
-      const zufall = sprueche[Math.floor(Math.random() * sprueche.length)];
-      const ausgabe = document.getElementById("greinerSpruch");
-      ausgabe.textContent = zufall;
-      ausgabe.style.animation = 'none';
-      ausgabe.offsetHeight;
-      ausgabe.style.animation = null;
-      document.getElementById("greinerSound").play();
+      const out = document.getElementById("greinerSpruch");
+      const sound = document.getElementById("greinerSound");
+      out.textContent = sprueche[Math.floor(Math.random() * sprueche.length)];
+      sound.play();
     }
-    setInterval(greinerSagt, 4 * 60 * 60 * 1000);
   </script>
 </body>
 </html>
