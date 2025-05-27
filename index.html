@@ -7,8 +7,7 @@
   <style>
     body{font-family:Arial,sans-serif;background:#e3f2fd;margin:0;padding:20px;color:#000}
     header img{max-width:200px;display:block;margin:0 auto 10px}
-    h1{text-align:center;margin:0}
-    p{text-align:center}
+    h1, p{text-align:center;margin:0}
     ul{list-style:none;padding:0;margin-top:20px}
     li{margin:10px 0;padding:10px;background:#fff;border-left:5px solid #ccc;border-radius:4px}
     .perfect{border-color:green}
@@ -16,7 +15,7 @@
     .bad{border-color:red}
     .greiner-output{margin-top:1em;font-style:italic;text-align:center}
     .last-updated{font-size:0.85em;margin-top:1em;text-align:center}
-    img.greiner-icon{margin-top:8px;max-width:100px;display:block;margin-left:auto;margin-right:auto}
+    img.greiner-icon{margin-top:8px;max-width:100px;display:block;margin:auto}
     button{display:block;margin:20px auto;padding:10px 20px;font-size:1em;background:#4caf50;color:#fff;border:none;border-radius:5px;cursor:pointer}
   </style>
 </head>
@@ -37,10 +36,8 @@
   </audio>
 
   <script>
-    // Auto-Refresh alle 2 Stunden
     setTimeout(() => location.reload(), 2 * 60 * 60 * 1000);
-    // Service Worker für PWA
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
     const list = document.getElementById("campingDays");
     const updated = document.getElementById("lastUpdated");
@@ -57,35 +54,34 @@
     }
 
     fetch("https://api.open-meteo.com/v1/forecast?latitude=51.4575&longitude=11.0581&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,cloudcover_mean,windspeed_10m_max,relative_humidity_2m_mean&timezone=Europe%2FBerlin")
-      .then(response => response.json())
+      .then(r => r.json())
       .then(data => {
-        const days = data.daily;
         updated.textContent = "🔄 Letzte Aktualisierung: " + new Date().toLocaleTimeString("de-DE");
-        days.time.forEach((d, i) => {
-          const max = days.temperature_2m_max[i], min = days.temperature_2m_min[i];
-          const rain = days.precipitation_sum[i], clouds = days.cloudcover_mean[i];
-          const wind = days.windspeed_10m_max[i], hum = days.relative_humidity_2m_mean[i];
+        data.daily.time.forEach((d, i) => {
+          const max = data.daily.temperature_2m_max[i], min = data.daily.temperature_2m_min[i];
+          const rain = data.daily.precipitation_sum[i], clouds = data.daily.cloudcover_mean[i];
+          const wind = data.daily.windspeed_10m_max[i], hum = data.daily.relative_humidity_2m_mean[i];
           const date = new Date(d);
-          const wd = date.toLocaleDateString("de-DE", { weekday: "long" });
+          const wd = date.toLocaleDateString("de-DE", {weekday:"long"});
           const formatted = `${wd}, ${d}`;
           const icon = clouds < 20 ? "☀️" : clouds < 70 ? "⛅" : "☁️";
-          let reason = "", spruch = "";
+          let reason="", spr="";
           const li = document.createElement("li");
           li.innerHTML = `<strong>${formatted}:</strong> ${icon} ${max}°C / ${min}°C`;
-          if (max >= 17 && max <= 30 && min >= 9 && min <= 21 && rain === 0 && clouds <= 50 && wind < 30 && hum < 70) {
+          if (max>=17&&max<=30&&min>=9&&min<=21&&rain===0&&clouds<=50&&wind<30&&hum<70) {
             li.classList.add("perfect");
             li.innerHTML += "<br><strong>🌟 Perfekter Campingtipp!</strong>";
-          } else if (max >= 15 && max <= 32 && min >= 7 && min <= 23 && rain <= 1 && clouds <= 70 && wind < 35 && hum <= 75) {
+          } else if (max>=15&&max<=32&&min>=7&&min<=23&&rain<=1&&clouds<=70&&wind<35&&hum<=75) {
             li.classList.add("almost");
             li.innerHTML += "<br><strong>👍 Fast perfekt – mit kleinen Abstrichen</strong>";
           } else {
             li.classList.add("bad");
-            if (rain > 1) { spruch = "🌧️ Regen? Der Greiner nennt das Himmelssauna."; reason = "regen"; }
-            else if (wind >= 35) { spruch = "💨 Zelt weht weg? Greiner fliegt einfach mit."; reason = "sturm"; }
-            else if (max > 32) { spruch = "🔥 35 °C? Wüstencamp mit Wellness."; reason = "hitze"; }
-            else if (min < 5) { spruch = "❄️ Kalt? Greiner grillt sich mit Glühwein warm."; reason = "kalt"; }
-            else if (clouds > 80) { spruch = "☁️ Keine Sonne? Greiner bringt sein eigenes Strahlen mit."; reason = "wolken"; }
-            li.innerHTML += `<br><strong>${spruch}</strong>` + (reason ? getGreinerImage(reason) : "");
+            if (rain>1){spr="🌧️ Regen? Der Greiner nennt das Himmelssauna."; reason="regen";}
+            else if (wind>=35){spr="💨 Zelt weht weg? Greiner fliegt einfach mit."; reason="sturm";}
+            else if (max>32){spr="🔥 35 °C? Wüstencamp mit Wellness."; reason="hitze";}
+            else if (min<5){spr="❄️ Kalt? Greiner grillt sich mit Glühwein warm."; reason="kalt";}
+            else if (clouds>80){spr="☁️ Keine Sonne? Greiner bringt sein eigenes Strahlen mit."; reason="wolken";}
+            li.innerHTML += `<br><strong>${spr}</strong>` + (reason?getGreinerImage(reason):"");
           }
           list.appendChild(li);
         });
@@ -106,7 +102,7 @@
         "Der Greiner braucht keine Stirnlampe – er strahlt von innen.",
         "( ͡° ͜ʖ ͡°) Greiner approved!"
       ];
-      document.getElementById("greinerSpruch").textContent = sprueche[Math.floor(Math.random() * sprueche.length)];
+      document.getElementById("greinerSpruch").textContent = sprueche[Math.floor(Math.random()*sprueche.length)];
       document.getElementById("greinerSound").play();
     }
   </script>
