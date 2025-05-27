@@ -77,10 +77,10 @@
           } else {
             li.classList.add("bad");
             if (rain>1){spr="🌧️ Regen? Der Greiner nennt das Himmelssauna."; reason="regen";}
-            else if (wind>=35){spr="💨 Zelt weht weg? Greiner fliegt einfach mit."; reason="sturm";}
+            else if (wind>=35){spr="💨 Zelt weht weg? Der Greiner fliegt einfach mit."; reason="sturm";}
             else if (max>32){spr="🔥 35 °C? Wüstencamp mit Wellness."; reason="hitze";}
-            else if (min<5){spr="❄️ Kalt? Greiner grillt sich mit Glühwein warm."; reason="kalt";}
-            else if (clouds>80){spr="☁️ Keine Sonne? Greiner bringt sein eigenes Strahlen mit."; reason="wolken";}
+            else if (min<5){spr="❄️ Kalt? Der Greiner grillt sich mit Glühwein warm."; reason="kalt";}
+            else if (clouds>80){spr="☁️ Keine Sonne? Der Greiner bringt sein eigenes Strahlen mit."; reason="wolken";}
             li.innerHTML += `<br><strong>${spr}</strong>` + (reason?getGreinerImage(reason):"");
           }
           list.appendChild(li);
