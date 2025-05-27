@@ -25,7 +25,7 @@
     <h1>⛺ Campingwetter Tilleda</h1>
   </header>
   <p>Nur perfekte oder fast perfekte Campingtage – sonst übernimmt <strong>der Greiner</strong>! 
-     <img src="greiner.png" alt="Der Greiner" style="max-width:80px;vertical-align:middle;margin-left:8px;">
+     <img src="A_flat-style_digital_illustration_features_a_beard.png" alt="Der Greiner" style="max-width:80px;vertical-align:middle;margin-left:8px;">
   </p>
 
   <ul id="campingDays"></ul>
@@ -38,23 +38,20 @@
   </audio>
 
   <script>
-    // Auto-Refresh alle 2 Stunden
     setTimeout(() => location.reload(), 2 * 60 * 60 * 1000);
-    // Service Worker für PWA
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
     const list = document.getElementById("campingDays"),
           updated = document.getElementById("lastUpdated"),
           iconMap = {
-            regen: "Ikon_Grainer_regen_Zelt.png",
+            regen: "warnsystem_regen.png",
             sturm: "warnsystem_sturm.png",
             hitze: "warnsystem_hitze.png",
             kalt: "warnsystem_kalt.png",
-            wolken: "warnsystem_wolken.png",
-            sonnig: "warnsystem_sonnig_square.png"
+            wolken: "warnsystem_wolken.png"
           };
 
-    function getGreinerImage(reason){
+    function getGreinerImage(reason) {
       return `<img src="${iconMap[reason]}" class="greiner-icon" alt="${reason}">`;
     }
 
@@ -73,22 +70,18 @@
                 wd = date.toLocaleDateString("de-DE", {weekday:"long"}),
                 formatted = `${wd}, ${d}`,
                 icon = clouds < 20 ? "☀️" : clouds < 70 ? "⛅" : "☁️";
-          let reason = "", spr = "";
+          let reason="", spr="";
           const li = document.createElement("li");
           li.innerHTML = `<strong>${formatted}:</strong> ${icon} ${max}°C / ${min}°C`;
 
-          // Perfekte Tage: Sonne-Icon + Einladung + Grumpy Icon
-          if(max>=17 && max<=30 && min>=9 && min<=21 && rain===0 && clouds<=50 && wind<30 && hum<70){
+          if(max>=17&&max<=30&&min>=9&&min<=21&&rain===0&&clouds<=50&&wind<30&&hum<70){
             li.classList.add("perfect");
             li.innerHTML += `<br><strong>☀️ Sonne? Bei dem Wetter kann ja jeder Campen</strong>`;
-            li.innerHTML += getGreinerImage("sonnig");
           }
-          // Fast perfekte Tage
-          else if(max>=15 && max<=32 && min>=7 && min<=23 && rain<=1 && clouds<=70 && wind<35 && hum<=75){
+          else if(max>=15&&max<=32&&min>=7&&min<=23&&rain<=1&&clouds<=70&&wind<35&&hum<=75){
             li.classList.add("almost");
             li.innerHTML += "<br><strong>👍 Fast perfekt – Der Greiner winkt!</strong>";
           }
-          // Schlechte Tage
           else {
             li.classList.add("bad");
             if(rain>1){ spr="Der Greiner nennt Regen einfach Himmelssauna."; reason="regen"; }
@@ -96,14 +89,14 @@
             else if(max>32){ spr="Der Greiner macht Wüstencamp mit Wellness."; reason="hitze"; }
             else if(min<5){ spr="Der Greiner wärmt sich mit Glühwein."; reason="kalt"; }
             else if(clouds>80){ spr="Der Greiner strahlt selbst ohne Sonne."; reason="wolken"; }
-            li.innerHTML += `<br><strong>${spr}</strong>` + (reason ? getGreinerImage(reason) : "");
+            li.innerHTML += `<br><strong>${spr}</strong>` + (reason?getGreinerImage(reason):"");
           }
 
           list.appendChild(li);
         });
       });
 
-    function greinerSagt(){
+    function greinerSagt() {
       const sprueche = [
         "Der Greiner braucht keinen Wetterbericht – er IST das Wetter!",
         "Der Greiner fliegt mit, wenn das Zelt abhebt.",
