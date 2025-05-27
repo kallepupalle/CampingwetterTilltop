@@ -24,7 +24,9 @@
     <img src="logo.png" alt="CampingWetter Tilltop Logo">
     <h1>⛺ Campingwetter Tilleda</h1>
   </header>
-  <p>Nur perfekte oder fast perfekte Campingtage – sonst übernimmt der Greiner! <img src="greiner.png" alt="Der Greiner" style="max-width:80px;vertical-align:middle;margin-left:8px;"></p>
+  <p>Nur perfekte oder fast perfekte Campingtage – sonst übernimmt der Greiner! 
+     <img src="greiner.png" alt="Der Greiner" style="max-width:80px;vertical-align:middle;margin-left:8px;">
+  </p>
 
   <ul id="campingDays"></ul>
   <div id="lastUpdated" class="last-updated"></div>
@@ -36,7 +38,9 @@
   </audio>
 
   <script>
+    // Auto-Refresh alle 2 Stunden
     setTimeout(()=>location.reload(),2*60*60*1000);
+    // Service Worker für PWA
     if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
     const list = document.getElementById("campingDays"),
@@ -67,22 +71,28 @@
           let reason="", spr="";
           const li=document.createElement("li");
           li.innerHTML=`<strong>${formatted}:</strong> ${icon} ${max}°C / ${min}°C`;
+
+          // Perfekte Tage: Sonne-Icon + Einladung
           if(max>=17&&max<=30&&min>=9&&min<=21&&rain===0&&clouds<=50&&wind<30&&hum<70){
             li.classList.add("perfect");
-            li.innerHTML+="<br><strong>🌟 Der Greiner empfiehlt!</strong>";
-          } else if(max>=15&&max<=32&&min>=7&&min<=23&&rain<=1&&clouds<=70&&wind<35&&hum<=75){
+            li.innerHTML+=`<br><strong>☀️ Sonne? Bei dem Wetter kann ja jeder Campen</strong>`;
+          }
+          // Fast perfekte Tage
+          else if(max>=15&&max<=32&&min>=7&&min<=23&&rain<=1&&clouds<=70&&wind<35&&hum<=75){
             li.classList.add("almost");
             li.innerHTML+="<br><strong>👍 Fast perfekt – Der Greiner winkt!</strong>";
-          } else {
-            li.classList.add("bad");
-            let spruch="";
-            if(rain>1){ spruch="Der Greiner nennt Regen einfach Himmelssauna."; reason="regen"; }
-            else if(wind>=35){ spruch="Der Greiner fliegt mit, wenn’s stürmt."; reason="sturm"; }
-            else if(max>32){ spruch="Der Greiner macht Wüstencamp mit Wellness."; reason="hitze"; }
-            else if(min<5){ spruch="Der Greiner wärmt sich mit Glühwein."; reason="kalt"; }
-            else if(clouds>80){ spruch="Der Greiner strahlt selbst ohne Sonne."; reason="wolken"; }
-            li.innerHTML+=`<br><strong>${spruch}</strong>`+(reason?getGreinerImage(reason):"");
           }
+          // Schlechte Tage
+          else {
+            li.classList.add("bad");
+            if(rain>1){ spr="Der Greiner nennt Regen einfach Himmelssauna."; reason="regen"; }
+            else if(wind>=35){ spr="Der Greiner fliegt mit, wenn’s stürmt."; reason="sturm"; }
+            else if(max>32){ spr="Der Greiner macht Wüstencamp mit Wellness."; reason="hitze"; }
+            else if(min<5){ spr="Der Greiner wärmt sich mit Glühwein."; reason="kalt"; }
+            else if(clouds>80){ spr="Der Greiner strahlt selbst ohne Sonne."; reason="wolken"; }
+            li.innerHTML+=`<br><strong>${spr}</strong>`+(reason?getGreinerImage(reason):"");
+          }
+
           list.appendChild(li);
         });
       });
