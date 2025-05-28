@@ -96,6 +96,7 @@
             else if (max > 32) { spr = "Der Greiner macht Wüstencamp mit Wellness."; reason = "hitze"; }
             else if (min < 5) { spr = "Der Greiner wärmt sich mit Glühwein."; reason = "kalt"; }
             else if (clouds > 80) { spr = "Der Greiner strahlt selbst ohne Sonne."; reason = "wolken"; }
+            else { spr = "Der Greiner zuckt mit den Schultern – irgendwie ist Wetter heute."; }
             li.innerHTML += `<br><strong>${spr}</strong>` + (reason ? getGreinerImage(reason) : "");
           }
           list.appendChild(li);
