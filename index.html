@@ -80,7 +80,7 @@
           // Bei sonnigem Wetter (Wolken < 20%)
           if (clouds < 20) {
             li.classList.add("perfect");
-            li.innerHTML += `<br><strong>☀️ Sonne - Bei dem Wetter kann ja jeder campen!</strong>`;
+            li.innerHTML += `<br><strong>☀️ Sonne - Wie ihr kommt jetzt auch campen?</strong>`;
             li.innerHTML += getGreinerImage("sonnig");
           }
           // Fast perfekte Tage
@@ -96,7 +96,7 @@
             else if (max > 32) { spr = "Der Greiner macht Wüstencamp mit Wellness."; reason = "hitze"; }
             else if (min < 5) { spr = "Der Greiner wärmt sich mit Glühwein."; reason = "kalt"; }
             else if (clouds > 80) { spr = "Der Greiner strahlt selbst ohne Sonne."; reason = "wolken"; }
-            else { spr = "Der Greiner zuckt mit den Schultern – irgendwie ist Wetter heute."; }
+            else { spr = "Der Greiner zuckt mit den Schultern – irgendwie ist immer Wetter."; }
             li.innerHTML += `<br><strong>${spr}</strong>` + (reason ? getGreinerImage(reason) : "");
           }
           list.appendChild(li);
