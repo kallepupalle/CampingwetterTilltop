@@ -80,13 +80,13 @@
           // Bei sonnigem Wetter (Wolken < 20%)
           if (clouds < 20) {
             li.classList.add("perfect");
-            li.innerHTML += `<br><strong>☀️ Bei dem Wetter kann ja jeder campen!</strong>`;
+            li.innerHTML += `<br><strong>☀️ Sonne - Bei dem Wetter kann ja jeder campen!</strong>`;
             li.innerHTML += getGreinerImage("sonnig");
           }
           // Fast perfekte Tage
           else if (max >= 15 && max <= 32 && min >= 7 && min <= 23 && rain <= 1 && clouds <= 70 && wind < 35 && hum <= 75) {
             li.classList.add("almost");
-            li.innerHTML += "<br><strong>👍 Fast perfekt – Der Greiner winkt!</strong>";
+            li.innerHTML += "<br><strong>👍 Fast perfekt – Bei dem Wetter kann ja jeder campen!</strong>";
           }
           // Schlechte Tage
           else {
