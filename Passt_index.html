@@ -77,11 +77,11 @@
 
           if(max>=17&&max<=30&&min>=9&&min<=21&&rain===0&&clouds<=50&&wind<30&&hum<70){
             li.classList.add("perfect");
-            li.innerHTML += `<br><strong>☀️ Sonne? Bei dem Wetter kann ja jeder Campen</strong>`;
+            li.innerHTML += `<br><strong> Sonne? Bei dem Wetter kann ja jeder Campen!</strong>`;
           }
           else if(max>=15&&max<=32&&min>=7&&min<=23&&rain<=1&&clouds<=70&&wind<35&&hum<=75){
             li.classList.add("almost");
-            li.innerHTML += "<br><strong>👍 Fast perfekt – Der Greiner winkt!</strong>";
+            li.innerHTML += "<br><strong> Fast perfekt? Bei dem Wetter kann ja jeder Campen!</strong>";
           }
           else {
             li.classList.add("bad");
@@ -105,7 +105,23 @@
         "Der Greiner nennt Regen einfach Himmelssauna.",
         "Der Greiner macht aus Hitze Wüstencamp mit Wellness.",
         "Der Greiner wärmt sich mit Glühwein gegen die Kälte.",
-        "Der Greiner strahlt selbst, wenn keine Sonne scheint."
+        "Der Greiner strahlt selbst, wenn keine Sonne scheint.",
+        "Der Greiner schwitzt nicht – das ist die Atmosphäre, die vor Ehrfurcht dampft.",
+        "Windstille? Der Greiner hat grad keinen Bock zu pusten.",
+        "Wenn der Greiner niesen muss, entsteht ein Sturm.",
+        "Der Greiner zieht keine Jacke an. Der Himmel zieht sich aus Respekt zurück.",
+        "Der Greiner campt auch bei Hagel – weil der Hagel sich dann umentscheidet.",
+        "Der Greiner macht Wetterumschwung zu Stilwechsel.",
+        "Wettervorhersage? Einfach Greiner fragen – oder noch besser: beobachten.",
+        "Der Greiner kennt keine Wetterapps – das Wetter kennt den Greiner."
+        "Wenn der Greiner schnippt, fällt der Tau.",
+        "Gewitter? Der Greiner diskutiert nur lauter.",
+        "Wenn der Greiner pfeift, entsteht ein Föhnwind.",
+        "Wenn der Greiner schläft, traut sich nicht mal der Regen zu tropfen.",
+        "Sturmwarnung? Der Greiner hat sich nur umgedreht.",
+        "Der Greiner hat kein Wetterglück – das Wetter hat Greinerglück.",
+        "Bei Greinerwetter brauchst du keinen Plan B. Nur Grillkohle.",
+        "Der Greiner ist der einzige Mensch, bei dem das Wetter einen guten Eindruck machen will."
       ];
       document.getElementById("greinerSpruch").textContent = sprueche[Math.floor(Math.random()*sprueche.length)];
       document.getElementById("greinerSound").play();
