@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Campingwetter Tilltop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:Arial,sans-serif;background:#e3f2fd;margin:0;padding:20px;color:#000}
+    header img{max-width:200px;display:block;margin:0 auto 10px}
+    h1,p{text-align:center;margin:0}
+    ul{list-style:none;padding:0;margin-top:20px}
+    li{margin:10px 0;padding:10px;background:#fff;border-left:5px solid #ccc;border-radius:4px}
+    .perfect{border-color:green}
+    .almost{border-color:orange}
+    .bad{border-color:red}
+    .greiner-output{margin-top:1em;font-style:italic;text-align:center}
+    .last-updated{font-size:0.85em;margin-top:1em;text-align:center}
+    img.greiner-icon{margin:8px auto 0;max-width:100px;display:block}
+    button{display:block;margin:20px auto;padding:10px 20px;font-size:1em;background:#4caf50;color:#fff;border:none;border-radius:5px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="CampingWetter Tilltop Logo">
+    <h1>⛺ Campingwetter Tilltop</h1>
+  </header>
+  <p><strong>das Wetter zum Zelt</strong>! 
+     <img src="A_flat-style_digital_illustration_features_a_beard.png" alt="Der Greiner" style="max-width:80px;vertical-align:middle;margin-left:8px;">
+  </p>
+
+  <ul id="campingDays"></ul>
+  <div id="lastUpdated" class="last-updated"></div>
+
+  <button onclick="greinerSagt()">🤔 Was würde der Greiner tun?</button>
+  <div id="greinerSpruch" class="greiner-output"></div>
+  <audio id="greinerSound">
+    <source src="https://actions.google.com/sounds/v1/human_voices/man_laugh_and_cheer.ogg" type="audio/ogg">
+  </audio>
+
+  <script>
+    // Auto-Refresh alle 2 Stunden
+    setTimeout(() => location.reload(), 2 * 60 * 60 * 1000);
+    // Service Worker für PWA
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+    const list = document.getElementById("campingDays"),
+          updated = document.getElementById("lastUpdated"),
+          iconMap = {
+            regen: "warnsystem_regen.png",
+            sturm: "warnsystem_sturm.png",
+            hitze: "warnsystem_hitze.png",
+            kalt: "warnsystem_kalt.png",
+            wolken: "warnsystem_wolken.png",
+            sonnig: "warnsystem_sonnig_square.png"
+          };
+
+    function getGreinerImage(reason){
+      return `<img src="${iconMap[reason]}" class="greiner-icon" alt="${reason}">`;
+    }
+
+    fetch("https://corsproxy.io/?" + encodeURIComponent("https://api.open-meteo.com/v1/forecast?latitude=51.4575&longitude=11.0581&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,cloudcover_mean,windspeed_10m_max,relative_humidity_2m_mean&timezone=Europe%2FBerlin"))
+      .then(r => r.json())
+      .then(data => {
+        updated.textContent = "🔄 Letzte Aktualisierung: " + new Date().toLocaleTimeString("de-DE");
+        data.daily.time.forEach((d, i) => {
+          const max = data.daily.temperature_2m_max[i],
+                min = data.daily.temperature_2m_min[i],
+                rain = data.daily.precipitation_sum[i],
+                clouds = data.daily.cloudcover_mean[i],
+                wind = data.daily.windspeed_10m_max[i],
+                hum = data.daily.relative_humidity_2m_mean[i];
+          const date = new Date(d),
+                wd = date.toLocaleDateString("de-DE", {weekday:"long"}),
+                formatted = `${wd}, ${d}`,
+                icon = clouds < 20 ? "☀️" : clouds < 70 ? "⛅" : "☁️";
+          let reason = "", spr = "";
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${formatted}:</strong> ${icon} ${max}°C / ${min}°C`;
+
+          if (clouds < 20) {
+            li.classList.add("perfect");
+            li.innerHTML += `<br><strong> Bei dem Wetter kann ja jeder campen!</strong>`;
+            li.innerHTML += getGreinerImage("sonnig");
+          } else if (max >= 15 && max <= 32 && min >= 7 && min <= 23 && rain <= 1 && clouds <= 70 && wind < 35 && hum <= 75) {
+            li.classList.add("almost");
+            li.innerHTML += "<br><strong> Bei dem Wetter kann ja jeder Cempen!</strong>";
+          } else {
+            li.classList.add("bad");
+            if (rain > 1) { spr = "Der Greiner nennt Regen einfach Himmelssauna."; reason = "regen"; }
+            else if (wind >= 35) { spr = "Der Greiner fliegt mit, wenn’s stürmt."; reason = "sturm"; }
+            else if (max > 32) { spr = "Der Greiner macht Wüstencamp mit Wellness."; reason = "hitze"; }
+            else if (min < 5) { spr = "Der Greiner wärmt sich mit Glühwein."; reason = "kalt"; }
+            else if (clouds > 80) { spr = "Der Greiner strahlt selbst ohne Sonne."; reason = "wolken"; }
+            li.innerHTML += `<br><strong>${spr}</strong>` + (reason ? getGreinerImage(reason) : "");
+          }
+          list.appendChild(li);
+        });
+      });
+
+    function greinerSagt() {
+      const sprueche = [
+"Der Greiner braucht keinen Wetterbericht – er IST das Wetter!",
+"Der Greiner fliegt mit, wenn das Zelt abhebt.",
+"Der Greiner grillt im Schneesturm – mit Flip-Flops.",
+"Der Greiner nennt Regen einfach Himmelssauna.",
+"Der Greiner macht aus Hitze Wüstencamp mit Wellness.",
+"Der Greiner wärmt sich mit Glühwein gegen die Kälte.",
+"Der Greiner strahlt selbst, wenn keine Sonne scheint.",
+"Der Greiner schwitzt nicht – das ist die Atmosphäre, die vor Ehrfurcht dampft.",
+"Windstille? Der Greiner hat grad keinen Bock zu pusten.",
+"Wenn der Greiner niesen muss, entsteht ein Sturm.",
+"Der Greiner zieht keine Jacke an. Der Himmel zieht sich aus Respekt zurück.",
+"Der Greiner campt auch bei Hagel – weil der Hagel sich dann umentscheidet.",
+"Der Greiner macht Wetterumschwung zu Stilwechsel.",
+"Wettervorhersage? Einfach Greiner fragen – oder noch besser: beobachten.",
+"Der Greiner kennt keine Wetterapps – das Wetter kennt den Greiner.",
+"Wenn der Greiner schnippt, fällt der Tau.",
+"Gewitter? Der Greiner diskutiert nur lauter.",
+"Wenn der Greiner pfeift, entsteht ein Föhnwind.",
+"Wenn der Greiner schläft, traut sich nicht mal der Regen zu tropfen.",
+"Sturmwarnung? Der Greiner hat sich nur umgedreht.",
+"Der Greiner hat kein Wetterglück – das Wetter hat Greinerglück.",
+"Bei Greinerwetter brauchst du keinen Plan B. Nur Grillkohle.",
+"Der Greiner ist der einzige Mensch, bei dem das Wetter einen guten Eindruck machen will."
+];
+      document.getElementById("greinerSpruch").textContent = sprueche[Math.floor(Math.random() * sprueche.length)];
+      document.getElementById("greinerSound").play();
+    }
+  </script>
+</body>
+</html>
